@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing with p5.js</title>
+    <h1>Реализация алгоритмов обработки изображений</h1>
+    
+    <style>
+        body {
+            background-color: rgb(255, 244, 230);
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #controls {
+            margin-bottom: 20px;
+        }
+        canvas {
+            margin: 10px;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <input type="file" id="imageLoader" accept="image/*">
+        <button onclick="applyLowPassFilter()">Apply Low-Pass Filter</button>
+        <button onclick="applyLinearContrast()">Apply Linear Contrast</button>
+        <button onclick="equalizeHistogram()">Equalize Histogram (RGB)</button>
+        <button onclick="equalizeHistogramHSV()">Equalize Histogram (HSV)</button>
+        <button id="resetButton">Return to original image</button>
+
+    </div>
+    <div id="canvasContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

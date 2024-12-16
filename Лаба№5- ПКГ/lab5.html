@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алгоритмы отсечения</title>
+    <style>
+        body { 
+            margin: 0; 
+            font-family: Arial, sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        #controls {
+            width: 300px; /* Ширина панели управления */
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-right: 1px solid #ccc;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* Прокрутка, если контент превышает высоту */
+        }
+        canvas {
+            flex-grow: 1; /* Занимает оставшееся пространство */
+            background-color: #f9f9f9;
+            border-left: 1px solid #ccc; /* Граница между канвасом и вводом */
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h3>Введите данные для Алгоритм Лианга-Барски (через параметрическое задание отрезков)</h3>
+        <label> Введите количество отрезков: <input type="number" id="segmentsCount" value="0" min="0"></label><br>
+        <p> Введите координаты отрезков: </p>
+        <textarea id="segmentsInput" rows="10" cols="30" placeholder="X1 Y1 X2 Y2 (по одному на строку)"></textarea><br>
+        <p> Введите координаты отсекающего прямоугольного окна: </p>
+        <label>Xmin: <input type="number" id="xmin"></label><br>
+        <label>Ymin: <input type="number" id="ymin"></label><br>
+        <label>Xmax: <input type="number" id="xmax"></label><br>
+        <label>Ymax: <input type="number" id="ymax"></label><br>
+        <br></br>
+        <button id="drawButton">Нарисовать</button>
+    </div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Установка размеров канваса
+        function resizeCanvas() {
+            canvas.width = window.innerWidth - 300; // Уменьшаем ширину на ширину панели управления
+            canvas.height = window.innerHeight;
+            drawVisibleSegments(); // Перерисовка при изменении размера
+        }
+
+        // Алгоритм Лианга-Барски
+        function liangBarsky(x1, y1, x2, y2, xmin, ymin, xmax, ymax) {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            let p = [-dx, dx, -dy, dy];
+            let q = [x1 - xmin, xmax - x1, y1 - ymin, ymax - y1];
+            let t0 = 0;
+            let t1 = 1;
+
+            for (let i = 0; i < 4; i++) {
+                if (p[i] === 0) {
+                    if (q[i] < 0) return null; // Параллельный отрезок полностью вне
+                } else {
+                    const t = q[i] / p[i];
+                    if (p[i] < 0) {
+                        if (t > t1) return null; // Полностью вне
+                        if (t > t0) t0 = t; // Устанавливаем t0
+                    } else {
+                        if (t < t0) return null; // Полностью вне
+                        if (t < t1) t1 = t; // Устанавливаем t1
+                    }
+                }
+            }
+            return [
+                x1 + t0 * dx,
+                y1 + t0 * dy,
+                x1 + t1 * dx,
+                y1 + t1 * dy,
+            ];
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = "#ddd";
+            ctx.beginPath();
+            const step = 20;
+            for (let i = -canvas.width; i <= canvas.width; i += step) {
+                ctx.moveTo(i + canvas.width / 2, 0);
+                ctx.lineTo(i + canvas.width / 2, canvas.height);
+                ctx.moveTo(0, i + canvas.height / 2);
+                ctx.lineTo(canvas.width, i + canvas.height / 2);
+            }
+            ctx.stroke();
+        }
+
+        function drawAxes() {
+            ctx.strokeStyle = "black";
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+
+            // Подпись осей
+            ctx.fillStyle = "black";
+            ctx.font = "12px Arial";
+            ctx.fillText("X", canvas.width - 15, canvas.height / 2 - 5);
+            ctx.fillText("Y", canvas.width / 2 + 5, 15);
+        }
+
+        function drawRectangle(xmin, ymin, xmax, ymax) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            ctx.fillRect(xmin + canvas.width / 2, canvas.height / 2 - ymax, xmax - xmin, ymax - ymin);
+        }
+
+        function drawSegment(x1, y1, x2, y2, color) {
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x1 + canvas.width / 2, canvas.height / 2 - y1);
+            ctx.lineTo(x2 + canvas.width / 2, canvas.height / 2 - y2);
+            ctx.stroke();
+        }
+
+        function drawVisibleSegments() {
+            const segmentsInput = document.getElementById('segmentsInput').value.trim().split('\n');
+            const xmin = parseFloat(document.getElementById('xmin').value) || -Infinity;
+            const ymin = parseFloat(document.getElementById('ymin').value) || -Infinity;
+            const xmax = parseFloat(document.getElementById('xmax').value) || Infinity;
+            const ymax = parseFloat(document.getElementById('ymax').value) || Infinity;
+
+            // Проверка на корректность значений
+            if (xmin >= xmax || ymin >= ymax) {
+                alert("Некорректные значения отсечающего окна!");
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            drawAxes();
+            drawRectangle(xmin, ymin, xmax, ymax);
+
+            let segmentCount = parseInt(document.getElementById('segmentsCount').value);
+            if (isNaN(segmentCount) || segmentCount <= 0 || segmentCount > segmentsInput.length) {
+                alert("Некорректное количество отрезков!");
+                return;
+            }
+
+            segmentsInput.slice(0, segmentCount).forEach(line => {
+                const coords = line.trim().split(' ').map(Number);
+                if (coords.length !== 4 || coords.some(isNaN)) {
+                    alert("Некорректные данные отрезков! Убедитесь, что вводите 4 числа для каждого отрезка.");
+                    return;
+                }
+
+                const [x1, y1, x2, y2] = coords;
+                const clipped = liangBarsky(x1, y1, x2, y2, xmin, ymin, xmax, ymax);
+                
+                // Рисуем видимую часть отрезка, если она есть
+                if (clipped) {
+                    drawSegment(clipped[0], clipped[1], clipped[2], clipped[3], 'blue'); // Видимая часть отрезка
+                }
+                // Всегда рисуем исходный отрезок серым цветом
+                drawSegment(x1, y1, x2, y2, 'gray'); // Исходный отрезок
+            });
+        }
+
+        document.getElementById('drawButton').addEventListener('click', drawVisibleSegments);
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); // Установка размеров при загрузке
+    </script>
+</body>
+</html>
+
+

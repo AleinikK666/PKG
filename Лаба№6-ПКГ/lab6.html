@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Transformations - Letter A</title>
+    <style>
+        body { margin: 0; background-color: #bbf2fd; }
+        canvas { display: block; }
+        .controls { position: fixed; top: 10px; left: 10px; background: rgba(255, 255, 255, 0.8); padding: 10px; }
+        #matrixDisplay { position: fixed; margin-top: 40px; font-family: monospace; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="scaleModel(1.1)">Scale Up</button>
+        <button onclick="scaleModel(0.9)">Scale Down</button>
+        <button onclick="moveModel(0.1, 0, 0)">Move Right</button>
+        <button onclick="moveModel(-0.1, 0, 0)">Move Left</button>
+        <button onclick="setCamera('perspective')">Perspective View</button>
+        <button onclick="setCamera('Oxy')">Oxy Projection</button>
+        <button onclick="setCamera('Oxz')">Oxz Projection</button>
+        <button onclick="setCamera('Oyz')">Oyz Projection</button>
+        
+    </div>
+    <pre id="matrixDisplay"></pre> <!-- Элемент для отображения матрицы -->
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://threejs.org/examples/jsm/loaders/FontLoader.js"></script>
+    <script src="https://threejs.org/examples/jsm/geometries/TextGeometry.js"></script>
+
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xbbf2fd);
+        document.body.appendChild(renderer.domElement);
+
+        camera.position.z = 3;
+
+        const frustumSize = 2;
+        const aspect = window.innerWidth / window.innerHeight;
+        const cameraOxy = new THREE.OrthographicCamera(-frustumSize * aspect, frustumSize * aspect, frustumSize, -frustumSize, 0.1, 1000);
+        const cameraOxz = new THREE.OrthographicCamera(-frustumSize * aspect, frustumSize * aspect, frustumSize, -frustumSize, 0.1, 1000);
+        const cameraOyz = new THREE.OrthographicCamera(-frustumSize * aspect, frustumSize * aspect, frustumSize, -frustumSize, 0.1, 1000);
+
+        cameraOxy.position.set(0, 0, 3);
+        cameraOxy.lookAt(0, 0, 0);
+        cameraOxz.position.set(0, 3, 0);
+        cameraOxz.lookAt(0, 0, 0);
+        cameraOyz.position.set(3, 0, 0);
+        cameraOyz.lookAt(0, 0, 0);
+
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        const thickness = 0.25;
+        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+        function createThickLine(start, end) {
+            const length = start.distanceTo(end);
+            const geometry = new THREE.BoxGeometry(thickness, length, thickness);
+            const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.copy(midpoint);
+            mesh.lookAt(end);
+            mesh.rotateX(Math.PI / 2);
+            return mesh;
+        }
+
+        const vertices = {
+            leftBottom: new THREE.Vector3(-0.5, -1, 0),
+            rightBottom: new THREE.Vector3(0.5, -1, 0),
+            top: new THREE.Vector3(0, 1, 0),
+            crossLeft: new THREE.Vector3(-0.25, 0, 0),
+            crossRight: new THREE.Vector3(0.25, 0, 0)
+        };
+
+        const leftSide = createThickLine(vertices.leftBottom, vertices.top);
+        const rightSide = createThickLine(vertices.rightBottom, vertices.top);
+        const crossBar = createThickLine(vertices.crossLeft, vertices.crossRight);
+        group.add(leftSide, rightSide, crossBar);
+
+        const axesHelper = new THREE.AxesHelper(1.5);
+        scene.add(axesHelper);
+
+        const loader = new THREE.FontLoader();
+        loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+            const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const textX = new THREE.TextGeometry('X', { font: font, size: 0.1, height: 0.01 });
+            const textY = new THREE.TextGeometry('Y', { font: font, size: 0.1, height: 0.01 });
+            const textZ = new THREE.TextGeometry('Z', { font: font, size: 0.1, height: 0.01 });
+
+            const meshX = new THREE.Mesh(textX, textMaterial);
+            meshX.position.set(1.6, 0, 0);
+            scene.add(meshX);
+
+            const meshY = new THREE.Mesh(textY, textMaterial);
+            meshY.position.set(0, 1.6, 0);
+            scene.add(meshY);
+
+            const meshZ = new THREE.Mesh(textZ, textMaterial);
+            meshZ.position.set(0, 0, 1.6);
+            scene.add(meshZ);
+        });
+
+        let activeCamera = camera;
+        function setCamera(view) {
+            activeCamera = (view === "perspective") ? camera : (view === "Oxy") ? cameraOxy : (view === "Oxz") ? cameraOxz : cameraOyz;
+        }
+
+        const matrixDisplay = document.getElementById("matrixDisplay");
+
+        function logTransformationMatrix() {
+            const elements = group.matrix.elements;
+            matrixDisplay.textContent = `
+                Итоговая матрица преобразования:
+                | ${elements[0].toFixed(2)} ${elements[4].toFixed(2)} ${elements[8].toFixed(2)} ${elements[12].toFixed(2)} |
+                | ${elements[1].toFixed(2)} ${elements[5].toFixed(2)} ${elements[9].toFixed(2)} ${elements[13].toFixed(2)} |
+                | ${elements[2].toFixed(2)} ${elements[6].toFixed(2)} ${elements[10].toFixed(2)} ${elements[14].toFixed(2)} |
+                | ${elements[3].toFixed(2)} ${elements[7].toFixed(2)} ${elements[11].toFixed(2)} ${elements[15].toFixed(2)} |
+            `;
+        }
+
+        function scaleModel(scaleFactor) {
+            group.scale.multiplyScalar(scaleFactor);
+            group.updateMatrixWorld(true);
+            logTransformationMatrix();
+        }
+
+        function moveModel(x, y, z) {
+            group.position.x += x;
+            group.position.y += y;
+            group.position.z += z;
+            group.updateMatrixWorld(true);
+            logTransformationMatrix();
+        }
+
+        let isMouseDown = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        document.addEventListener("mousedown", (event) => {
+            isMouseDown = true;
+            previousMousePosition.x = event.clientX;
+            previousMousePosition.y = event.clientY;
+        });
+        document.addEventListener("mousemove", (event) => {
+            if (isMouseDown) {
+                const deltaMove = { x: event.clientX - previousMousePosition.x, y: event.clientY - previousMousePosition.y };
+                const rotationSpeed = 0.005;
+                group.rotation.y += deltaMove.x * rotationSpeed;
+                group.rotation.x += deltaMove.y * rotationSpeed;
+                previousMousePosition.x = event.clientX;
+                previousMousePosition.y = event.clientY;
+                group.updateMatrixWorld(true);
+                logTransformationMatrix();
+            }
+        });
+        document.addEventListener("mouseup", () => (isMouseDown = false));
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, activeCamera);
+        }
+        animate();
+        
+    </script>
+</body>
+</html>

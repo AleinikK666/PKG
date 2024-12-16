@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алгоритмы растеризации</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+
+        }
+
+        /* Стили для контейнера канваса и управления */
+        .canvas-container {
+            background: #eaf9ff;
+            border: 1px solid  #000000;
+            padding: 30px;
+            width: 850px;
+            max-width: 100%;
+            user-select: none;
+            display: flex;
+            box-shadow: 0 8px 16px rgba(79, 147, 215, 0.4);
+        }
+
+        /* Стили для заголовка */
+        .canvas-container h2 {
+            color: rgb(31, 21, 215);
+            align-items: center;
+        }
+
+        /* Стили для канваса */
+        canvas {
+            border: 1px solid #000000;
+            background: #ffffff;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+            background: #ffffff;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 5px 5px;
+            color: white;
+        }
+
+        /* Стили для панели управления */
+        .controls {
+            margin: 20px 0;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Стили для групп ввода */
+        .input {
+            margin: 10px 5px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input label {
+            margin-right: 5px;
+            font-weight: bold;
+            color: rgb(0, 0, 0);
+        }
+
+        .input input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .input input[type="range"] {
+            width: 200px;
+            margin: 10px;
+        }
+
+        /* Стили для кнопок алгоритмов */
+        .algorithm-buttons {
+            padding: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .algorithm-buttons button {
+            padding: 5px 20px;
+            background: #3b639a;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <div class="controls">
+            <h2>Алгоритмы растеризации</h2>
+            <div class="input">
+                <label>Начальная точка:</label>
+                <input type="number" id="x1" placeholder="x1">
+                <input type="number" id="y1" placeholder="y1">
+                <label>Конечная точка:</label>
+                <input type="number" id="x2" placeholder="x2">
+                <input type="number" id="y2" placeholder="y2">
+            </div>
+            <div class="input">
+                <label>Радиус окружности:</label>
+                <input type="number" id="radius" placeholder="radius">
+            </div>
+           <div class="algorithm-buttons">
+                <button onclick="drawStepByStep()">Пошаговый</button>
+                <button onclick="drawDDA()">ЦДА</button>
+                <button onclick="drawBresenham()">Брезенхем (линия)</button>
+                <button onclick="drawBresenhamCircle()">Брезенхем (окружность)</button>
+            </div>
+            <div class="input">
+                <label>Масштаб:</label>
+                <input type="range" id="scale" min="5" max="50" value="10" step="0.1" onchange="updateScale()">
+                <span id="scaleValue">Масштаб: 15.0</span>
+            </div>
+        </div>
+        <div class="results">
+            <b>Время выполнения:</b>
+            <pre id="timing"></pre>
+            <canvas id="canvas" width="600" height="600"></canvas>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
