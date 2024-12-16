@@ -1,0 +1,87 @@
+body{
+    max-width: 1500px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 40px;
+    background-color: rgb(221, 221, 221);
+}
+.big{
+    display: flex;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: rgb(247, 247, 247);
+}
+.mod{
+    display: flex;
+    flex-direction: column;
+   /*background-color: aquamarine;*/
+}
+.element{
+    display: flex;
+    flex-direction: column;
+    padding: 0px 5px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.element p{
+    text-align: center;
+}
+.element input{
+    border-radius: 10px;
+    width: 70px;
+    outline: none;
+}
+[class*="model-"]{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: rgb(221, 221, 221);
+
+    margin: 10px 0px;
+    padding: 5px;
+    width: 350px;
+}
+#canvas{
+    /*width: 200px;
+    height: 200px;*/
+    border: 2px solid black;
+    border-radius: 10px;
+    align-self: flex-end;
+    margin: 5px 50px 10px 50px;
+}
+.pallette{
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+    width: 150px;
+    margin: 65px 50px 5px 50px;
+    border-radius: 10px;
+    background-color: rgb(221, 221, 221);
+}
+.pallette p{
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 0px;
+}
+.canvasPallette{
+    display: flex;
+    flex-direction: column;
+}
+.colors{
+    display: flex;
+    flex-direction: column;
+}
+.line{
+    display: flex;
+    flex-direction: row;
+    padding: 3px 20%;
+}
+[class*="color-"]{
+    width: 15px;
+    height: 15px;
+    border: 0.7px solid black;
+    margin: 3px 3px;
+}

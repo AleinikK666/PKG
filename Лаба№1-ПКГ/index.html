@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Color-Convecter</title>
+        <link rel="stylesheet" href="Color-Convecter.css">
+    </head>
+    <body>
+    <div class="big1 " style="font-family: Arial, Helvetica, sans-serif; text-align: center; "><p style="font-size: 50px;">Color Convecter </p><p style="font-size: 20px;"> CMYK ↔ LAB ↔ HSV</p>
+    <div class="big">
+        <div class="mod">
+
+            <div class="model-cmyk">
+                <div class="element">
+                    <p>C</p>
+                    <input class="rect-c" type="number" placeholder="0" step="0.01" min="0" max="1" oninput="cmykclick()"/>
+                    <input class="slide-c" type="range" placeholder="0" step="0.01" min="0" max="1" oninput="cmykslide()"/>
+                </div>
+                <div class="element">
+                    <p>M</p>
+                    <input class="rect-m" type="number" placeholder="0" step="0.01" min="0" max="1" oninput="cmykclick()"/>
+                    <input class="slide-m" type="range" placeholder="0" step="0.01" min="0" max="1"oninput="cmykslide()"/>
+                </div>
+                <div class="element">
+                    <p>Y</p>
+                    <input class="rect-y" type="number" placeholder="0" step="0.01" min="0" max="1" oninput="cmykclick()"/>
+                    <input class="slide-y" type="range" placeholder="0" step="0.01" min="0" max="1"oninput="cmykslide()"/>
+                </div>
+                <div class="element">
+                    <p>K</p>
+                    <input class="rect-k" type="number" placeholder="0" step="0.01" min="0" max="1" oninput="cmykclick()"/>
+                    <input class="slide-k" type="range" placeholder="0" step="0.01" min="0" max="1"oninput="cmykslide()"/>
+                </div>
+            </div>
+
+            <div class="model-lab">
+                <div class="element">
+                    <p>L</p>
+                    <input class="rect-l" type="number" placeholder="0" step="0.01" min="0" max="100" oninput="labclick()"/>
+                    <input class="slide-l" type="range" placeholder="0" step="0.01" min="0" max="100"oninput="labslide()"/>
+                </div>
+                <div class="element">
+                    <p>A</p>
+                    <input class="rect-a" type="number" placeholder="0" step="0.01" min="-128" max="128" oninput="labclick()"/>
+                    <input class="slide-a" type="range" placeholder="0" step="0.01" min="-128" max="128"oninput="labslide()"/>
+                </div>
+                <div class="element">
+                    <p>B</p>
+                    <input class="rect-b" type="number" placeholder="0" step="0.01" min="-128" max="128" oninput="labclick()"/>
+                    <input class="slide-b" type="range" placeholder="0" step="0.01" min="-128" max="128"oninput="labslide()"/>
+                </div>
+            </div>
+
+            <div class="model-hsv">
+                <div class="element">
+                    <p>H</p>
+                    <input class="rect-h" type="number" placeholder="0" step="0.01" min="0" max="360" oninput="hsvclick()"/>
+                    <input class="slide-h" type="range" placeholder="0" step="0.01" min="0" max="360"oninput="hsvslide()"/>
+                </div>
+                <div class="element">
+                    <p>S</p>
+                    <input class="rect-s" type="number" placeholder="0" step="0.01" min="0" max="1" oninput="hsvclick()"/>
+                    <input class="slide-s" type="range" placeholder="0" step="0.01" min="0" max="1"oninput="hsvslide()"/>
+                </div>
+                <div class="element">
+                    <p>V</p>
+                    <input class="rect-v" type="number" placeholder="0" step="0.01" min="0" max="1" oninput="hsvclick()"/>
+                    <input class="slide-v" type="range" placeholder="0" step="0.01" min="0" max="1"oninput="hsvslide()"/>
+                </div>
+            </div>
+
+        </div>
+        <div class="canvasPallette">
+            <div class="pallette">
+                <p> Choose color</p>
+                <div class="colors">
+                    <div class="line">
+                        <input type="button" class="color-red" style="background: red;"/>
+                        <input type="button" class="color-orange" style="background: orange;"/>
+                        <input type="button" class="color-yellow" style="background: yellow;"/>
+                        <input type="button" class="color-green" style="background: green;"/>
+                    </div>
+                    <div class="line">
+                        <div class="color-lightBlue" style="background: lightblue;"></div>
+                        <div class="color-blue" style="background: blue;"></div>
+                        <div class="color-purple" style="background: purple;"></div>
+                    </div>
+                </div>
+            </div>
+            <canvas id="canvas" width="200" height="200"></canvas>
+        </div>
+        <script src="Color-Convecter.js"></script>
+    </div></div>
+    </body>
+</html>
